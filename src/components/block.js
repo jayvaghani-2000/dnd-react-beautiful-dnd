@@ -110,6 +110,7 @@ const Block = observer(props => {
         canBeDeleted={!block?.isDummy}
         canBeDupplicated={!block?.isDummy}
         onBlockContextMenuClick={_handleMenuAction}
+        dragHandleProp={props.dragHandleProp || {}}
     >
         <div onClick={e => _onClick(props?.blockId, e)}>
           {Control({

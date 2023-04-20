@@ -5,7 +5,11 @@ import rowColArray from "./rowColArrayUtils";
 import { observer } from "mobx-react";
 import { Block } from "./block";
 import "./page.css";
-import { getDraggableStyle, getDroppableClasses, handleResultAfterDrop } from "./dragAndDropHelper";
+import {
+  getDraggableStyle,
+  getDroppableClasses,
+  handleResultAfterDrop,
+} from "./dragAndDropHelper";
 import { runInAction } from "mobx";
 
 const Page = observer((props) => {
@@ -106,15 +110,16 @@ const Page = observer((props) => {
     await store.updatePage({ title });
   };
 
-  const onDragEnd = async(result) => {
-    runInAction((async() => {
-        const updatedBlock = handleResultAfterDrop(result, blocks)
-        await store.dragBlockToNewPlace(updatedBlock);
-        setBlock(updatedBlock);
-    }))
+  const onDragEnd = async (result) => {
+    runInAction(async () => {
+      const updatedBlock = handleResultAfterDrop(result, blocks);
+      await store.dragBlockToNewPlace(updatedBlock);
+      setBlock(updatedBlock);
+    });
   };
 
   const draggableBlock = blocks.slice(0, -1);
+  draggableBlock.forEach(i => console.log(i.row, i.col, i.content))
   const groupedCards = rowColArray.groupCardRowWise(draggableBlock);
   const [addBlock] = blocks.slice(-1);
 
@@ -143,11 +148,23 @@ const Page = observer((props) => {
                       <div
                         ref={provider.innerRef}
                         {...provider.draggableProps}
-                        {...provider.dragHandleProps}
                         className={"draggable"}
-                        style={getDraggableStyle(snapshot, snapshotInner, provider)}
+                        style={getDraggableStyle(
+                          snapshot,
+                          snapshotInner,
+                          provider
+                        )}
                       >
-                        {block.content}
+                        <Block
+                          key={block.id}
+                          dragHandleProp={{ ...provider.dragHandleProps }}
+                          onHandleMenuAction={onHandleMenuAction}
+                          blockId={block.id}
+                          store={store}
+                          onReturnKeyPressed={async (_) =>
+                            await onReturnKeyPressed(block)
+                          }
+                        />
                       </div>
                     )}
                   </Draggable>
@@ -158,24 +175,17 @@ const Page = observer((props) => {
           </Droppable>
         ))}
       </DragDropContext>
-    </div>
-  );
 
-  return (
-    <div className="page">
-      {getSortedBlockArray().map((cols, rowIndex) => (
-        <div className="pagerow" key={"row_" + rowIndex} id={"row_" + rowIndex}>
-          {cols?.map((block) => (
-            <Block
-              key={block.id}
-              onHandleMenuAction={onHandleMenuAction}
-              blockId={block.id}
-              store={store}
-              onReturnKeyPressed={async (_) => await onReturnKeyPressed(block)}
-            />
-          ))}
-        </div>
-      ))}
+      {/* This is block is render out of  DragAndDropWrapper as it is a last block which is for adding new block and is not draggable as well */}
+      {addBlock && (
+        <Block
+          key={addBlock.id}
+          onHandleMenuAction={onHandleMenuAction}
+          blockId={addBlock.id}
+          store={store}
+          onReturnKeyPressed={async (_) => await onReturnKeyPressed(addBlock)}
+        />
+      )}
     </div>
   );
 });

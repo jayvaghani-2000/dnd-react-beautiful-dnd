@@ -131,7 +131,7 @@ const BlockSelector = observer(class BlockSelector extends React.Component {
          </>
         
         return <div className={'blockSelector blockChooser input  line ' + (this.props.showBlockTypeSelector ? 'blockSelectorDisplay' : '')}>
-            <div className={'menu-handler' + (this._getBlockControlModel().hasTitle ? ' menutitle':'')}>{Menu}</div>
+            <div className={'menu-handler' + (this._getBlockControlModel().hasTitle ? ' menutitle':'')} {...this.props.dragHandleProp}>{Menu}</div>
             <div className={`control display`} onClick={this.props.onClick}>
               {this.props.children}
             </div>
