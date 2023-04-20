@@ -113,11 +113,14 @@ const groupCardRowWise = (rows) => {
 
   return Object.values(sortedCard).reduce(
     (prev, curr, index) => {
-      prev.push = curr;
-      prev.push = [];
+      if(index === 0) {
+        prev.push([]);
+      }
+      prev.push(curr);
+      prev.push([]);
       return prev;
     },
-    [[]]
+    []
   );
 };
 

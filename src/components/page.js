@@ -5,7 +5,8 @@ import rowColArray from "./rowColArrayUtils";
 import { observer } from "mobx-react";
 import { Block } from "./block";
 import "./page.css";
-import { getDraggableStyle, getDroppableClasses } from "./dragAndDropHelper";
+import { getDraggableStyle, getDroppableClasses, handleResultAfterDrop } from "./dragAndDropHelper";
+import { runInAction } from "mobx";
 
 const Page = observer((props) => {
   const [blocks, setBlock] = useState([]);
@@ -105,7 +106,13 @@ const Page = observer((props) => {
     await store.updatePage({ title });
   };
 
-  const onDragEnd = () => {};
+  const onDragEnd = async(result) => {
+    runInAction((async() => {
+        const updatedBlock = handleResultAfterDrop(result, blocks)
+        await store.dragBlockToNewPlace(updatedBlock);
+        setBlock(updatedBlock);
+    }))
+  };
 
   const draggableBlock = blocks.slice(0, -1);
   const groupedCards = rowColArray.groupCardRowWise(draggableBlock);
@@ -138,7 +145,7 @@ const Page = observer((props) => {
                         {...provider.draggableProps}
                         {...provider.dragHandleProps}
                         className={"draggable"}
-                        style={getDraggableStyle(snapshotInner, provider)}
+                        style={getDraggableStyle(snapshot, snapshotInner, provider)}
                       >
                         {block.content}
                       </div>

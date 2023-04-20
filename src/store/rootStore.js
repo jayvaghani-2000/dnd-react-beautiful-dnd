@@ -271,6 +271,15 @@ class rootStore {
     
     await Promise.all(p)    
   }
+
+  dragBlockToNewPlace = async (blocks) => {
+    let p = [];
+    blocks.forEach(b => {
+      p.push(new Promise(() => this.updateBlock(b.id, b.content, b.type, b.data, b.row, b.col, b.isDummy)))
+    })
+    await Promise.all(p)    
+  }
+
   canMoveLeft = id => {
     const block = this.findBlockInCurrentPage(id)
     return block?.col > 0 && !block.isDummy
