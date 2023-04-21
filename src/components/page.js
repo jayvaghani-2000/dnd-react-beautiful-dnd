@@ -113,13 +113,14 @@ const Page = observer((props) => {
   const onDragEnd = async (result) => {
     runInAction(async () => {
       const updatedBlock = handleResultAfterDrop(result, blocks);
+      
       await store.dragBlockToNewPlace(updatedBlock);
       setBlock(updatedBlock);
     });
   };
 
   const draggableBlock = blocks.slice(0, -1);
-  draggableBlock.forEach(i => console.log(i.row, i.col, i.content))
+  
   const groupedCards = rowColArray.groupCardRowWise(draggableBlock);
   const [addBlock] = blocks.slice(-1);
 

@@ -27,7 +27,6 @@ export const handleResultAfterDrop = (result, blocks) => {
 
   const isDropOnNewRow = +destinationDroppableId % 2 === 0;
   const dropOnRow = +(destinationDroppableId - 1) / 2;
-
   updatedBlock[selectedBlock].row = +Math.round(dropOnRow);
   updatedBlock[selectedBlock].col = destinationIndex;
 
@@ -36,8 +35,9 @@ export const handleResultAfterDrop = (result, blocks) => {
     isDropOnNewRow,
     draggableId,
     Math.round(dropOnRow),
-    destinationIndex
-  )
+    destinationIndex,
+    droppableId === destinationDroppableId && index < destinationIndex
+  );
 };
 
 const reArrangeAfterDrop = (
@@ -45,7 +45,8 @@ const reArrangeAfterDrop = (
   isDropOnNewRow,
   draggableId,
   dropOnId,
-  destinationIndex
+  destinationIndex,
+  isOnSameRowToRight
 ) => {
   cards.forEach((i, index) => {
     if (isDropOnNewRow) {
@@ -56,9 +57,22 @@ const reArrangeAfterDrop = (
       if (
         i.id !== draggableId &&
         i.col >= destinationIndex &&
-        i.row === dropOnId
+        i.row === dropOnId &&
+        !isOnSameRowToRight
       ) {
         i.col += 1;
+      }
+      if (
+        i.id !== draggableId &&
+        i.col >= destinationIndex &&
+        i.row === dropOnId &&
+        isOnSameRowToRight
+      ) {
+        if (i.col === destinationIndex) {
+          i.col -= 0.5;
+        } else {
+          i.col += 1;
+        }
       }
     }
   });
