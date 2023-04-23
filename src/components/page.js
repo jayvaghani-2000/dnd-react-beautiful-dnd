@@ -129,10 +129,12 @@ const Page = observer((props) => {
   const handleDragStart = (result) => {
     const { source } = result;
     const { droppableId } = source;
-    if (groupedCards[droppableId].length > 0) {
+    if (groupedCards[droppableId].length === 1) {
       setDisableDroppable([+droppableId + 1, +droppableId - 1]);
     }
   };
+
+  console.log('disableDroppable', disableDroppable)
 
   return (
     <div className="page">
