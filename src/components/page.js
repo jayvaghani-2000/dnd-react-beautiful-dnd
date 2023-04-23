@@ -134,8 +134,6 @@ const Page = observer((props) => {
     }
   };
 
-  console.log('disableDroppable', disableDroppable)
-
   return (
     <div className="page">
       <DragDropContext onDragEnd={onDragEnd} onDragStart={handleDragStart}>
