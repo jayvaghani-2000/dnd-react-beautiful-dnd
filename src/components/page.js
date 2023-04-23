@@ -14,6 +14,7 @@ import { runInAction } from "mobx";
 
 const Page = observer((props) => {
   const [blocks, setBlock] = useState([]);
+  const [disableDroppable, setDisableDroppable] = useState([]);
 
   useEffect(() => {
     if (store.blocksForCurrentPage.length) {
@@ -113,25 +114,35 @@ const Page = observer((props) => {
   const onDragEnd = async (result) => {
     runInAction(async () => {
       const updatedBlock = handleResultAfterDrop(result, blocks);
-      
+
       await store.dragBlockToNewPlace(updatedBlock);
       setBlock(updatedBlock);
     });
+    setDisableDroppable([]);
   };
 
   const draggableBlock = blocks.slice(0, -1);
-  
+
   const groupedCards = rowColArray.groupCardRowWise(draggableBlock);
   const [addBlock] = blocks.slice(-1);
 
+  const handleDragStart = (result) => {
+    const { source } = result;
+    const { droppableId } = source;
+    if (groupedCards[droppableId].length > 0) {
+      setDisableDroppable([+droppableId + 1, +droppableId - 1]);
+    }
+  };
+
   return (
     <div className="page">
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={handleDragStart}>
         {groupedCards.map((cols, index) => (
           <Droppable
             direction="horizontal"
             droppableId={index.toString()}
             key={index.toString()}
+            isDropDisabled={disableDroppable.includes(index) ? true : false}
           >
             {(provided, snapshot) => (
               <div
